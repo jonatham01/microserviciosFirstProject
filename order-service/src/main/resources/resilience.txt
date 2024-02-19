@@ -1,0 +1,46 @@
+resilience4j.circuitbreaker.instances.inventario.registerHealthIndicator=true
+resilience4j.circuitbreaker.instances.inventario.eventConsumerBufferSize=10
+resilience4j.circuitbreaker.instances.inventario.slidingWindowType=COUNT_BASED
+resilience4j.circuitbreaker.instances.inventario.slidingWindowSize=5
+resilience4j.circuitbreaker.instances.inventario.failureRateThreshold=50
+resilience4j.circuitbreaker.instances.inventario.waitDurationInOpenState=5s
+resilience4j.circuitbreaker.instances.inventario.permittedNumberOfCallsInHalfOpenState=3
+resilience4j.circuitbreaker.instances.inventario.automaticTransitionFromOpenToHalfOpenEnabled=true
+
+resilience4j.timeliner.instances.inventario.timeout-duration=3s
+resilience.retry.instances.inventario.max-attemps=3
+resilience.retry.instances.inventario.wait-duration=5s
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+    enpoints:
+      web:
+        exposure:
+          include: health
+
+    enpoint:
+      health:
+        show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+
+
+
+	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>

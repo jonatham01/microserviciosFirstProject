@@ -1,0 +1,13 @@
+-ORDER SERVICE
+  PLACE-ORDER
+    - Crea las ordenes de productos
+    - Recibe como parametro un orderRequest el cual es un dto y contiene los items en el orderLineItemsDtoList
+    - Crea una instancia de Order
+    - Crea un UUID ramdom y lo utiliza como numero de pedido
+    - Mapea los dto de orderLineItemsDtoList  y los convierte en orderlineitems
+    - Setea el orderLineItems al order
+    - mapea el orderLineItems del order y lo convierte en una lista de codigosSku
+    - con webclient se conecta al microservicio de inventario y extrae el inventario de los codigos sku
+    - Matchea la variable isInStock de los items del inventario
+    - si  el match anterior es true, entonces guarda la orden.
+    - de lo contrario genera una excepcion
