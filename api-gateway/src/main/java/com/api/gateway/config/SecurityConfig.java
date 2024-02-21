@@ -12,18 +12,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import java.net.http.HttpClient;
-/*
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
-import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
-import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
- */
 
 @EnableWebFluxSecurity
 public class SecurityConfig {
@@ -39,11 +28,7 @@ public class SecurityConfig {
                         .oauth2ResourceServer( oauth2 -> oauth2
                         .jwt(Customizer.withDefaults())
                 );
-                //.oauth2ResourceServer( oauth2 -> oauth2
-                       // .jwt(Customizer.withDefaults())
 
-
-              //  );
         return serverHttpSecurity.build();
     }
     @Bean
@@ -53,14 +38,7 @@ public class SecurityConfig {
 
 }
 
-/*
-    @Bean
-    public ReactiveJwtDecoder jwtDecoder() {
-        return NimbusReactiveJwtDecoder.withIssuerLocation("http://localhost:8081/realms/spring-boot-microservices-realm").build();
 
-    }
-
-*/
 
 /*
                         oauth2 -> oauth2
@@ -87,21 +65,4 @@ spring.main.allow-bean-definition-overriding=true
 server.ssl.enabled=false
 
 
- */
-
-/*return NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri)
-
-                .jwsAlgorithm(SignatureAlgorithm.RS256).build();*/
-
-/*
-
-<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-		</dependency>
  */
