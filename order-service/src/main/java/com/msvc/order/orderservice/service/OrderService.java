@@ -30,7 +30,7 @@ public class OrderService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private WebClient.Builder webClient;
+    private WebClient.Builder webCliBuilder;
 
    /// @Autowired(required = true)
     //private Tracer tracer;
@@ -52,11 +52,10 @@ public class OrderService {
                 .map(OrderLineItems::getCodigoSku)
                 .toList();
 
-        InventarioResponse[] inventarioResponseArray = webClient.build().get()
-                //.uri("http://inventario-service/api/inventario",
-                .uri("http://localhost:8083/api/inventario",
-                        uriBuilder -> uriBuilder.queryParam("codigoSku",codigoSku).build()
-                ).retrieve()
+        InventarioResponse[] inventarioResponseArray = webCliBuilder.build().get()
+                .uri("http://inventario-service/api/inventario",uriBuilder -> uriBuilder.queryParam("codigoSku",codigoSku).build())
+                // .header("Authorization", "Bearer MY_SECRET_TOKEN")
+                .retrieve()
                 .bodyToMono(InventarioResponse[].class)
                 .block();
 
@@ -69,60 +68,11 @@ public class OrderService {
             return "orden realizada";
         }
         else{
-            throw new IllegalArgumentException("El producto no esta en stock");
+
+            return"ok";
+
         }
     }
-    /*@Transactional
-    @SneakyThrows //oculta la excepcion al compilador, pero en ejecucion si se arroja
-    public String placeOrder(OrderRequest orderRequest){
-        Order order = new Order();
-        order.setNumeroPedido(UUID.randomUUID().toString());
-
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-
-        order.setOrderLineItems(orderLineItems);
-
-        List<String> codigoSku =order.getOrderLineItems().stream()
-                        .map(OrderLineItems::getCodigoSku)
-                                .toList();
-
-        //trace de un service
-        Span inventarioServiceLookup = tracer.nextSpan().name("InventarioServiceLookup");
-
-        try(Tracer.SpanInScope isLookUp =
-                    tracer.withSpanInScope(inventarioServiceLookup.start())
-        ){
-            inventarioServiceLookup.tag("call","inventario-service");
-
-            InventarioResponse[] inventarioResponseArray = webClient.build().get()
-                    .uri("http://inventario-service/api/inventario",
-                            //.uri("http://localhost:8082/api/inventario",
-                            uriBuilder -> uriBuilder.queryParam("codigoSku",codigoSku).build()
-                    ).retrieve()
-                    .bodyToMono(InventarioResponse[].class)
-                    .block();
-
-            assert inventarioResponseArray != null;
-            boolean allProductosInStock = Arrays.stream(inventarioResponseArray)
-                    .allMatch(InventarioResponse::isInStock);
-
-            if(allProductosInStock){
-                orderRepository.save(order);
-                return "pedido exitoso";
-            }
-            else{
-                throw new IllegalArgumentException("El producto no esta en stock");
-            }
-
-        }finally {
-            inventarioServiceLookup.flush();
-        }
-
-
-    }*/
 
     private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto){
         OrderLineItems orderLineItems = new OrderLineItems();
@@ -133,39 +83,3 @@ public class OrderService {
     }
 }
 
-/*
-public void placeOrder(OrderRequest orderRequest){
-        Order order = new Order();
-        order.setNumeroPedido(UUID.randomUUID().toString());
-
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-
-        order.setOrderLineItems(orderLineItems);
-
-        List<String> codigoSku =order.getOrderLineItems().stream()
-                        .map(OrderLineItems::getCodigoSku)
-                                .toList();
-
-        InventarioResponse[] inventarioResponseArray = webClient.build().get()
-                        .uri("http://inventario-service/api/inventario",
-                        //.uri("http://localhost:8082/api/inventario",
-                                uriBuilder -> uriBuilder.queryParam("codigoSku",codigoSku).build()
-                        ).retrieve()
-                        .bodyToMono(InventarioResponse[].class)
-                        .block();
-
-        boolean allProductosInStock = Arrays.stream(inventarioResponseArray)
-                        .allMatch(InventarioResponse::isInStock);
-
-        if(allProductosInStock){
-            orderRepository.save(order);
-        }
-        else{
-            throw new IllegalArgumentException("El producto no esta en stock");
-        }
-    }
-
- */
