@@ -6,6 +6,7 @@ import com.msvc.order.orderservice.config.WebClientConfig;
 import com.msvc.order.orderservice.dto.InventarioResponse;
 import com.msvc.order.orderservice.dto.OrderLineItemsDto;
 import com.msvc.order.orderservice.dto.OrderRequest;
+import com.msvc.order.orderservice.event.OrderPlacedEvent;
 import com.msvc.order.orderservice.model.Order;
 import com.msvc.order.orderservice.model.OrderLineItems;
 import com.msvc.order.orderservice.repository.OrderRepository;
@@ -14,6 +15,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -24,8 +26,10 @@ import java.util.stream.Collectors;
 
 //@Slf4j
 @Service
-public class OrderService { 
+public class OrderService {
 
+    @Autowired
+    private KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
     @Autowired
     private OrderRepository orderRepository;
 
@@ -65,6 +69,8 @@ public class OrderService {
 
         if(allProductosInStock){
             orderRepository.save(order);
+            kafkaTemplate.send("notificationTopic",new OrderPlacedEvent(order.getNumeroPedido()));
+
             return "orden realizada";
         }
         else{
