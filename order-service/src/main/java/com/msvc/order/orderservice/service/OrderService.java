@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-    @Autowired
+    @Autowired(required = true)
     private KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
     @Autowired
     private OrderRepository orderRepository;
