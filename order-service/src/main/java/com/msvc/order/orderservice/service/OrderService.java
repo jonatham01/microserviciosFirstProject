@@ -3,6 +3,7 @@ package com.msvc.order.orderservice.service;
 //import brave.Span;
 //import brave.Tracer;
 import com.msvc.order.orderservice.config.WebClientConfig;
+import com.msvc.order.orderservice.config.rabbitmq.Producer;
 import com.msvc.order.orderservice.dto.InventarioResponse;
 import com.msvc.order.orderservice.dto.OrderLineItemsDto;
 import com.msvc.order.orderservice.dto.OrderRequest;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-//@Slf4j
+@Slf4j
 @Service
 public class OrderService {
 
@@ -38,6 +39,9 @@ public class OrderService {
 
    /// @Autowired(required = true)
     //private Tracer tracer;
+
+    @Autowired
+    private Producer producer;
 
     //@Transactional
     //@SneakyThrows //oculta la excepcion al compilador, pero en ejecucion si se arroja
@@ -69,6 +73,7 @@ public class OrderService {
 
         if(allProductosInStock){
             orderRepository.save(order);
+            enviarMensajeConRabbitMQ("Notificacion con RabbitMQ, Pedido ordenado con exito");
             kafkaTemplate.send("notificationTopic",new OrderPlacedEvent(order.getNumeroPedido()));
 
             return "orden realizada";
@@ -86,6 +91,11 @@ public class OrderService {
         orderLineItems.setPrecio(orderLineItemsDto.getPrecio());
         orderLineItems.setCodigoSku(orderLineItemsDto.getCodigoSku());
         return orderLineItems;
+    }
+
+    private void enviarMensajeConRabbitMQ(String message){
+        log.info("El mensaje '{}' ha sido enviado con exito",message);
+        producer.send(message);
     }
 }
 
